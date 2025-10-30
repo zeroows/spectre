@@ -2,6 +2,15 @@
 
 A Rust implementation of the Spectre password manager CLI, providing stateless password generation based on the Spectre algorithm.
 
+**This is a derivative work based on the original Spectre algorithm by Maarten Billemont.**
+
+- Original Project: https://spectre.app
+- Original Repository: https://gitlab.com/spectre.app/api
+- Original License: GNU General Public License v3.0 (GPL-3.0)
+- Original Copyright: © 2011-2017 Maarten Billemont
+
+This Rust implementation is also licensed under GPL-3.0 in compliance with the original license terms.
+
 ## Overview
 
 Spectre is a stateless password management solution that generates site-specific passwords from:
@@ -214,11 +223,25 @@ This implementation aims to be compatible with the original Spectre/MasterPasswo
 
 ## License
 
-This implementation follows the spirit of the original Spectre project.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)** or later.
+
+This is a derivative work based on the original Spectre implementation by Maarten Billemont.
+- See [LICENSE](LICENSE) for the full GPL-3.0 license text
+- See [COPYRIGHT.md](COPYRIGHT.md) for detailed attribution and copyright information
 
 ## Credits
 
-Based on the original Spectre algorithm by Maarten Billemont.
-- Original: https://spectre.app
-- Algorithm: https://spectre.app/spectre-algorithm.pdf
+**Original Algorithm and Implementation:**
+- Created by: **Maarten Billemont**
+- Project: https://spectre.app
+- Repository: https://gitlab.com/spectre.app/api
+- Copyright: © 2011-2017 Maarten Billemont
+- License: GPL-3.0
+
+**Rust Implementation:**
+- Developed by: **Abdulrhman Alkhodiry**
+- Copyright: © 2025
+- License: GPL-3.0-or-later
+
+This Rust implementation maintains full compatibility with the original Spectre algorithm while providing the benefits of Rust's memory safety and performance.
 
