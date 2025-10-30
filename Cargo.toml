@@ -2,6 +2,10 @@
 name = "spectre"
 version = "0.1.0"
 edition = "2024"
+authors = ["Abdulrhman Alkhodiry"]
+license = "GPL-3.0-or-later"
+description = "A Rust implementation of the Spectre password manager (derivative of Maarten Billemont's original work)"
+homepage = "https://spectre.app"
 
 [[bin]]
 name = "spectre-cli"
