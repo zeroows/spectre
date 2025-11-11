@@ -1,7 +1,10 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn FullNameInput(full_name: Signal<String>) -> Element {
+pub fn FullNameInput(
+    full_name: Signal<String>,
+    on_blur: EventHandler<()>,
+) -> Element {
     rsx! {
         div {
             label {
@@ -32,7 +35,8 @@ pub fn FullNameInput(full_name: Signal<String>) -> Element {
                 r#type: "text",
                 placeholder: "eg. Robert Lee Mitchell",
                 value: "{full_name}",
-                oninput: move |e| full_name.set(e.value())
+                oninput: move |e| full_name.set(e.value()),
+                onblur: move |_| on_blur.call(())
             }
         }
     }

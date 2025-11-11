@@ -75,7 +75,7 @@ fn Home() -> Element {
     // Track when to trigger key computation
     let mut trigger_key_computation = use_signal(|| 0u32);
     
-    // Eager user key generation - starts when user focuses on site field or leaves secret field
+    // Eager user key generation - starts when user focuses on site field or leaves secret/name field
     // This precomputes the expensive scrypt operation before user tries to type
     use_effect(move || {
         let trigger = trigger_key_computation();
@@ -83,9 +83,10 @@ fn Home() -> Element {
             return; // Don't compute on initial render
         }
         
-        let name = full_name.read().clone();
-        let sec = secret.read().clone();
-        let worker_ref = (*key_worker.read()).clone(); // Clone the Arc reference
+        // Capture values once when trigger changes - don't subscribe to signal changes
+        let name = full_name.peek().clone();
+        let sec = secret.peek().clone();
+        let worker_ref = (*key_worker.peek()).clone(); // Clone the Arc reference
         
         spawn(async move {
             // Wait a bit to let the UI update
@@ -254,7 +255,13 @@ fn Home() -> Element {
                 div {
                     class: "space-y-6",
                     
-                    FullNameInput { full_name }
+                    FullNameInput {
+                        full_name,
+                        on_blur: move |_| {
+                            // Trigger key computation when user leaves full name field
+                            trigger_key_computation.set(trigger_key_computation() + 1);
+                        }
+                    }
                     
                     SpectreSecretInput {
                         secret,
