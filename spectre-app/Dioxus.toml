@@ -4,6 +4,7 @@ out_dir = "dist"
 
 [web.app]
 title = "Spectre-rs Password Generator"
+base_path = "spectre"
 
 [web.watcher]
 reload_html = true
