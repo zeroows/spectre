@@ -42,4 +42,10 @@ pub use error::{SpectreError, Result};
 pub use models::*;
 pub use marshal::{spectre_marshal_read, spectre_marshal_write, spectre_marshal_auth, spectre_user_path};
 pub use types::*;
-pub use util::*;
+
+// Re-export utility functions (parse_bool and zero_string are always available)
+pub use util::{parse_bool, zero_string};
+
+// CLI utilities are conditionally exported
+#[cfg(feature = "cli")]
+pub use util::cli;

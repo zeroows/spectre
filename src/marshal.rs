@@ -1,11 +1,15 @@
-use std::fs::{self, File};
-use std::io::{Read, Write};
 use std::path::PathBuf;
 use crate::error::{Result, SpectreError};
 use crate::models::*;
 use crate::algorithm::{spectre_user_key, spectre_identicon};
 
-/// Read a marshalled user file
+#[cfg(feature = "cli")]
+use std::fs::{self, File};
+#[cfg(feature = "cli")]
+use std::io::{Read, Write};
+
+/// Read a marshalled user file (CLI only)
+#[cfg(feature = "cli")]
 pub fn spectre_marshal_read(file_path: &PathBuf) -> Result<(SpectreMarshalledFile, Option<SpectreMarshalledUser>)> {
     if !file_path.exists() {
         return Ok((
@@ -31,7 +35,14 @@ pub fn spectre_marshal_read(file_path: &PathBuf) -> Result<(SpectreMarshalledFil
     }
 }
 
-/// Write a marshalled user file
+/// Read a marshalled user file (stub for non-CLI builds)
+#[cfg(not(feature = "cli"))]
+pub fn spectre_marshal_read(_file_path: &PathBuf) -> Result<(SpectreMarshalledFile, Option<SpectreMarshalledUser>)> {
+    Err(SpectreError::InvalidFileFormat("File I/O not available in this build".to_string()))
+}
+
+/// Write a marshalled user file (CLI only)
+#[cfg(feature = "cli")]
 pub fn spectre_marshal_write(
     file_path: &PathBuf,
     format: SpectreFormat,
@@ -58,6 +69,16 @@ pub fn spectre_marshal_write(
     file.write_all(contents.as_bytes())?;
 
     Ok(())
+}
+
+/// Write a marshalled user file (stub for non-CLI builds)
+#[cfg(not(feature = "cli"))]
+pub fn spectre_marshal_write(
+    _file_path: &PathBuf,
+    _format: SpectreFormat,
+    _user: &SpectreMarshalledUser,
+) -> Result<()> {
+    Err(SpectreError::InvalidFileFormat("File I/O not available in this build".to_string()))
 }
 
 /// Parse flat format (simplified version)
@@ -92,7 +113,8 @@ pub fn spectre_marshal_auth(
     Ok(())
 }
 
-/// Get the default user file path
+/// Get the default user file path (CLI only)
+#[cfg(feature = "cli")]
 pub fn spectre_user_path(user_name: &str, format: SpectreFormat) -> Option<PathBuf> {
     let home_dir = dirs::home_dir()?;
     let spectre_dir = home_dir.join(".spectre.d");
@@ -104,6 +126,12 @@ pub fn spectre_user_path(user_name: &str, format: SpectreFormat) -> Option<PathB
     
     let filename = format!("{}.{}", user_name, extension);
     Some(spectre_dir.join(filename))
+}
+
+/// Get the default user file path (stub for non-CLI builds)
+#[cfg(not(feature = "cli"))]
+pub fn spectre_user_path(_user_name: &str, _format: SpectreFormat) -> Option<PathBuf> {
+    None
 }
 
 #[cfg(test)]
