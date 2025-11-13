@@ -1,0 +1,22 @@
+[application]
+name = "spectre-app"
+out_dir = "dist"
+
+[web.app]
+title = "Spectre-rs Password Generator"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "assets"]
+
+[web.resource]
+style = []
+script = []
+
+[web.resource.dev]
+script = []
+
+[web]
+# The port the fullstack server will listen on.
+# Defaults to 8080 if not specified.
+port = 3000 # Replace 3000 with your desired port number
