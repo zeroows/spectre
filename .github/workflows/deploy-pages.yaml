@@ -1,0 +1,48 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+          profile: minimal
+
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli
+
+      - name: Build with Dioxus
+        run: |
+          cd spectre-app
+          dx bundle -r
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./spectre-app/dist/public
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write      # Allow the GITHUB_TOKEN to create a deployment
+      id-token: write   # Allow the GITHUB_TOKEN to authenticate with OIDC
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

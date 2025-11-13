@@ -37,10 +37,10 @@ fn App() -> Element {
 /// Home page - Spectre Landing Page
 #[component]
 fn Home() -> Element {
-    let mut full_name = use_signal(|| String::new());
-    let mut secret = use_signal(|| String::new());
-    let mut site_domain = use_signal(|| String::new());
-    let mut password_type = use_signal(|| SpectreResultType::LongPassword);
+    let full_name = use_signal(|| String::new());
+    let secret = use_signal(|| String::new());
+    let site_domain = use_signal(|| String::new());
+    let password_type = use_signal(|| SpectreResultType::LongPassword);
     let mut generated_password = use_signal(|| String::new());
     let mut identicon = use_signal(|| String::new());
     let mut is_generating = use_signal(|| false);
@@ -54,7 +54,7 @@ fn Home() -> Element {
     // Falls back to main thread if worker initialization fails
     // Use Arc to share the worker across async contexts
     use std::sync::Arc;
-    let mut key_worker = use_signal(|| {
+    let key_worker = use_signal(|| {
         KeyWorker::new().ok().map(Arc::new)
     });
 
