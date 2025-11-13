@@ -21,3 +21,5 @@ Thumbs.db
 *.mpsites
 *.json
 !Cargo.json
+
+*/dist/public

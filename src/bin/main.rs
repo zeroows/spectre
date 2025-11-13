@@ -1,5 +1,6 @@
 use clap::Parser;
 use spectre::*;
+use spectre::util::cli::*;
 use std::process;
 use std::str::FromStr;
 
