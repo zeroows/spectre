@@ -1,0 +1,73 @@
+# Cursor Rules - Context7 Required
+
+## MANDATORY: Always Use Context7
+
+**CRITICAL RULE**: Before answering any question, implementing any feature, or solving any problem, you MUST use Context7 to look up relevant documentation and best practices.
+
+### When to Use Context7
+
+1. **Before implementing any feature**: Always search Context7 for library documentation, examples, and best practices
+2. **When encountering errors**: Use Context7 to find solutions and troubleshooting guides
+3. **When using external libraries**: Always fetch library documentation via Context7 before using APIs
+4. **When optimizing code**: Search Context7 for performance best practices and patterns
+5. **When designing architecture**: Consult Context7 for design patterns and architectural guidance
+
+### How to Use Context7
+
+1. **Resolve library ID first**: Use `mcp_context7_resolve-library-id` to find the correct library identifier
+2. **Fetch documentation**: Use `mcp_context7_get-library-docs` with the resolved library ID
+3. **Apply best practices**: Use the documentation to inform your implementation
+4. **Cite sources**: Reference the Context7 documentation when explaining your approach
+
+### Example Workflow
+
+```
+User asks: "How do I implement X?"
+1. Use Context7 to resolve library ID for relevant library
+2. Fetch documentation with specific topic
+3. Review examples and best practices
+4. Implement solution based on Context7 documentation
+5. Explain approach referencing Context7 sources
+```
+
+### Prohibited Behavior
+
+- ❌ DO NOT implement features without consulting Context7 first
+- ❌ DO NOT guess API usage - always look it up via Context7
+- ❌ DO NOT skip Context7 even for "simple" questions
+- ❌ DO NOT use outdated patterns - always check Context7 for current best practices
+
+### Exception
+
+The ONLY exception is when Context7 is explicitly unavailable or the user explicitly requests to skip it. Otherwise, Context7 usage is MANDATORY.
+
+---
+
+## Project-Specific Rules
+
+### Technology Stack
+- **Framework**: Dioxus 0.7.1
+- **Language**: Rust
+- **Styling**: Tailwind CSS
+- **Platform**: Web (WASM)
+
+### Code Style
+- Use Rust naming conventions (snake_case for functions, PascalCase for types)
+- Prefer explicit types over type inference when it improves readability
+- Use `use_signal`, `use_memo`, `use_effect` hooks appropriately
+- Keep components focused and single-purpose
+- Organize code into separate component files
+
+### Component Organization
+- Components should be in `src/components/` directory
+- Each component should be in its own file
+- Use `mod.rs` to re-export components
+- Pass signals and event handlers as props
+
+### Best Practices
+- Always handle async operations with `spawn` and proper error handling
+- Use debouncing for expensive operations
+- Cache expensive computations (like scrypt key derivation)
+- Provide visual feedback for loading states
+- Ensure accessibility with proper ARIA labels and keyboard navigation
+
