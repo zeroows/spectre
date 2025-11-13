@@ -19,9 +19,12 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
           profile: minimal
+          
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@v1.15.11
 
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli
+        run: cargo binstall dioxus-cli@0.7.0 --force
 
       - name: Build with Dioxus
         run: |
