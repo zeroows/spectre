@@ -24,7 +24,7 @@ jobs:
         uses: cargo-bins/cargo-binstall@v1.15.11
 
       - name: Install Dioxus CLI
-        run: cargo binstall dioxus-cli@0.7.0 --force
+        run: cargo binstall dioxus-cli@0.7.1 --force
 
       - name: Build with Dioxus
         run: |
