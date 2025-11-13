@@ -3,7 +3,7 @@ name = "spectre-app"
 out_dir = "dist"
 
 [web.app]
-title = "Spectre Password Generator"
+title = "Spectre-rs Password Generator"
 
 [web.watcher]
 reload_html = true
