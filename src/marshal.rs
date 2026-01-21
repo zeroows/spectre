@@ -82,6 +82,7 @@ pub fn spectre_marshal_write(
 }
 
 /// Parse flat format (simplified version)
+#[allow(dead_code)]
 fn parse_flat_format(_contents: &str) -> Result<(SpectreMarshalledFile, Option<SpectreMarshalledUser>)> {
     // This is a simplified parser - the full implementation would be more complex
     // For now, return an error to encourage JSON format
@@ -89,6 +90,7 @@ fn parse_flat_format(_contents: &str) -> Result<(SpectreMarshalledFile, Option<S
 }
 
 /// Write flat format (simplified version)
+#[allow(dead_code)]
 fn write_flat_format(_user: &SpectreMarshalledUser) -> Result<String> {
     // This is a simplified writer - the full implementation would be more complex
     Err(SpectreError::InvalidFileFormat("Flat format writing not fully implemented. Please use JSON format.".to_string()))

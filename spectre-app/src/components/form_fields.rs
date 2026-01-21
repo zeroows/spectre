@@ -8,35 +8,16 @@ pub fn FullNameInput(
     rsx! {
         div {
             label {
-                class: "flex items-center gap-2 text-slate-400 text-xs tracking-widest mb-2",
-                "YOUR FULL NAME"
-                div {
-                    class: "group relative",
-                    span {
-                        class: "text-slate-500 cursor-help",
-                        "?"
-                    }
-                    div {
-                        class: "absolute left-0 top-6 hidden w-64 rounded-xl border border-slate-600 bg-slate-800/95 p-3 text-xs font-normal text-slate-300 shadow-xl group-hover:block z-50",
-                        p {
-                            class: "text-slate-300",
-                            strong { "Your full name" }
-                            " is used to generate your master key. Use the same name consistently across all your devices."
-                        }
-                        p {
-                            class: "text-slate-400 mt-2",
-                            "Example: Robert Lee Mitchell"
-                        }
-                    }
-                }
+                class: "block text-xs tracking-wider text-slate-500 mb-2",
+                "Your Full Name"
             }
             input {
-                class: "w-full bg-slate-700/40 text-slate-300 placeholder-slate-500 px-6 py-4 rounded-full border border-slate-600/50 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-700/60 transition",
+                class: "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all",
                 r#type: "text",
-                placeholder: "eg. Robert Lee Mitchell",
                 value: "{full_name}",
-                oninput: move |e| full_name.set(e.value()),
-                onblur: move |_| on_blur.call(())
+                placeholder: "Enter your full name",
+                oninput: move |evt| full_name.set(evt.value()),
+                onblur: move |_| on_blur.call(()),
             }
         }
     }
@@ -47,46 +28,37 @@ pub fn SpectreSecretInput(
     secret: Signal<String>,
     on_blur: EventHandler<()>,
 ) -> Element {
+    let mut show_secret = use_signal(|| false);
+    
     rsx! {
         div {
+            label {
+                class: "block text-xs tracking-wider text-slate-500 mb-2",
+                "Your Spectre Secret (Your known password)"
+            }
             div {
-                class: "flex items-center justify-between mb-2",
-                label {
-                    class: "flex items-center gap-2 text-slate-400 text-xs tracking-widest",
-                    "YOUR SPECTRE SECRET"
-                    div {
-                        class: "group relative",
-                        span {
-                            class: "text-slate-500 cursor-help",
-                            "?"
-                        }
-                        div {
-                            class: "absolute left-0 top-6 hidden w-64 rounded-xl border border-slate-600 bg-slate-800/95 p-3 text-xs font-normal text-slate-300 shadow-xl group-hover:block z-50",
-                            p {
-                                class: "text-slate-300",
-                                strong { "Your master password" }
-                                " is the only password you need to remember. It's combined with your name to generate unique passwords for each site."
-                            }
-                            p {
-                                class: "text-slate-400 mt-2",
-                                "💡 Tip: Use a memorable phrase like \"banana colored duckling\""
-                            }
-                            p {
-                                class: "text-yellow-400 mt-2",
-                                "⚠️ Never share this with anyone!"
-                            }
-                        }
+                class: "relative",
+                input {
+                    class: "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2 pr-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all",
+                    r#type: if show_secret() { "text" } else { "password" },
+                    value: "{secret}",
+                    placeholder: "Enter your secret",
+                    oninput: move |evt| secret.set(evt.value()),
+                    onblur: move |_| on_blur.call(()),
+                }
+                button {
+                    class: "absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-cyan-400 transition-colors",
+                    r#type: "button",
+                    onclick: move |_| {
+                        let current = *show_secret.read();
+                        show_secret.set(!current);
+                    },
+                    if show_secret() {
+                        EyeOffIcon {}
+                    } else {
+                        EyeIcon {}
                     }
                 }
-                span { class: "text-2xl", "🔒" }
-            }
-            input {
-                class: "w-full bg-slate-700/40 text-slate-300 placeholder-slate-500 px-6 py-4 rounded-full border border-slate-600/50 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-700/60 transition",
-                r#type: "password",
-                placeholder: "eg. banana colored duckling",
-                value: "{secret}",
-                oninput: move |e| secret.set(e.value()),
-                onblur: move |_| on_blur.call(())
             }
         }
     }
@@ -100,70 +72,50 @@ pub fn SiteDomainInput(
 ) -> Element {
     rsx! {
         div {
-            div {
-                class: "flex items-center justify-center mb-2",
-                span { class: "text-cyan-400 text-2xl", "↓" }
-            }
             label {
-                class: "flex items-center justify-between gap-2 text-slate-400 text-xs tracking-widest mb-2",
-                div {
-                    class: "flex items-center gap-2",
-                    "SITE DOMAIN"
-                    div {
-                        class: "group relative",
-                        span {
-                            class: "text-slate-500 cursor-help",
-                            "?"
-                        }
-                        div {
-                            class: "absolute left-0 top-6 hidden w-72 rounded-xl border border-slate-600 bg-slate-800/95 p-3 text-xs font-normal text-slate-300 shadow-xl group-hover:block z-50",
-                            p {
-                                class: "text-slate-300",
-                                strong { "The website domain" }
-                                " you want to generate a password for. Each site gets a unique password."
-                            }
-                            p {
-                                class: "text-slate-400 mt-2",
-                                "Examples: github.com, google.com, facebook.com"
-                            }
-                            p {
-                                class: "text-cyan-400 mt-2",
-                                "💡 Use consistent domain names (e.g., always \"google.com\", not \"www.google.com\")"
-                            }
-                        }
-                    }
-                }
-                if *is_computing_key.read() {
-                    span {
-                        class: "inline-flex items-center gap-2 rounded-full bg-yellow-400/10 px-3 py-1 text-[11px] font-medium text-yellow-200",
-                        span { class: "animate-spin", "⏳" }
-                        "Computing key"
-                    }
-                }
+                class: "block text-xs tracking-wider text-slate-500 mb-2",
+                "Site Domain"
             }
             input {
-                class: if *is_computing_key.read() {
-                    "w-full bg-slate-700/40 text-slate-300 placeholder-slate-500 px-6 py-4 rounded-full border border-yellow-400/50 focus:outline-none focus:border-yellow-400/50 focus:bg-slate-700/60 transition"
-                } else {
-                    "w-full bg-slate-700/40 text-slate-300 placeholder-slate-500 px-6 py-4 rounded-full border border-slate-600/50 focus:outline-none focus:border-cyan-400/50 focus:bg-slate-700/60 transition"
-                },
+                class: "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all",
                 r#type: "text",
-                placeholder: if *is_computing_key.read() {
-                    "eg. wikipedia.org (computing key in background...)"
-                } else {
-                    "eg. wikipedia.org"
-                },
                 value: "{site_domain}",
-                oninput: move |e| site_domain.set(e.value()),
+                placeholder: "example.com",
+                oninput: move |evt| site_domain.set(evt.value()),
                 onfocus: move |_| on_focus.call(()),
-            }
-            if *is_computing_key.read() {
-                p {
-                    class: "text-xs text-yellow-200/90 mt-2 pl-1",
-                    "⚡ Generating secure encryption key…"
-                }
             }
         }
     }
 }
 
+#[component]
+fn EyeIcon() -> Element {
+    rsx! {
+        svg {
+            class: "w-5 h-5",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "2",
+            view_box: "0 0 24 24",
+            path { d: "M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" }
+            circle { cx: "12", cy: "12", r: "3" }
+        }
+    }
+}
+
+#[component]
+fn EyeOffIcon() -> Element {
+    rsx! {
+        svg {
+            class: "w-5 h-5",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "2",
+            view_box: "0 0 24 24",
+            path { d: "M9.88 9.88a3 3 0 1 0 4.24 4.24" }
+            path { d: "M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" }
+            path { d: "M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" }
+            line { x1: "2", x2: "22", y1: "2", y2: "22" }
+        }
+    }
+}
