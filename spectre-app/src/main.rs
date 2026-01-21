@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
-use spectre::{spectre_user_key, spectre_site_result, spectre_identicon_render, spectre_identicon};
-use spectre::{SpectreResultType, SpectreKeyPurpose, SPECTRE_ALGORITHM_CURRENT, SpectreUserKey};
+use spectre::{spectre_user_key, spectre_site_result, spectre_identicon_render, spectre_identicon, spectre_identicon_preview};
+use spectre::{SpectreResultType, SpectreKeyPurpose, SPECTRE_ALGORITHM_CURRENT, SpectreUserKey, SPECTRE_COUNTER_DEFAULT};
 use gloo_timers::future::sleep;
 use std::time::Duration;
 
@@ -41,6 +41,7 @@ fn Home() -> Element {
     let secret = use_signal(|| String::new());
     let site_domain = use_signal(|| String::new());
     let password_type = use_signal(|| SpectreResultType::LongPassword);
+    let counter = use_signal(|| SPECTRE_COUNTER_DEFAULT);
     let mut generated_password = use_signal(|| String::new());
     let mut identicon = use_signal(|| String::new());
     let mut is_generating = use_signal(|| false);
@@ -74,6 +75,25 @@ fn Home() -> Element {
 
     // Track when to trigger key computation
     let mut trigger_key_computation = use_signal(|| 0u32);
+    
+    // Preview identicon - shows immediately as user types (uses fast SHA256)
+    // This gives instant visual feedback before the expensive scrypt computation
+    use_effect(move || {
+        let name = full_name();
+        let sec = secret();
+        
+        // Validate name and secret
+        let name_is_valid = !name.is_empty() && name.len() >= 3;
+        let secret_is_valid = !sec.is_empty() && sec.len() >= 4;
+        
+        if name_is_valid && secret_is_valid {
+            // Generate fast preview identicon (SHA256 - instant)
+            let preview_bytes = spectre_identicon_preview(&name, &sec);
+            identicon.set(spectre_identicon_render(preview_bytes));
+        } else {
+            identicon.set(String::new());
+        }
+    });
     
     // Eager user key generation - starts when user focuses on site field or leaves secret/name field
     // This precomputes the expensive scrypt operation before user tries to type
@@ -109,6 +129,7 @@ fn Home() -> Element {
                 };
                 
                 if needs_computation {
+                    // Keep preview identicon visible while computing real key
                     // Show that we're computing the key
                     is_computing_key.set(true);
                     
@@ -132,12 +153,20 @@ fn Home() -> Element {
                     };
                     
                     if let Ok(key) = key_result {
-                        cached_user_key.set(Some((name.clone(), sec.clone(), key)));
+                        cached_user_key.set(Some((name.clone(), sec.clone(), key.clone())));
+                        
+                        // Generate identicon immediately after key is computed
+                        let mut identicon_bytes = [0u8; 4];
+                        identicon_bytes.copy_from_slice(&key.key_data[0..4]);
+                        identicon.set(spectre_identicon_render(identicon_bytes));
                     }
                     
                     // Always reset the computing state, even on error
                     is_computing_key.set(false);
                 }
+            } else {
+                // Clear identicon if inputs are invalid
+                identicon.set(String::new());
             }
         });
     });
@@ -151,6 +180,7 @@ fn Home() -> Element {
         let sec = secret();
         let site = site_domain();
         let result_type = password_type();
+        let counter_value = counter();
         let worker_ref = (*key_worker.read()).clone(); // Clone the Arc reference
         
         // Spawn an async task with a delay
@@ -202,6 +232,13 @@ fn Home() -> Element {
                     if let Ok(ref key) = result {
                         // Cache the result for future use
                         cached_user_key.set(Some((name.clone(), sec.clone(), key.clone())));
+                        
+                        // Generate identicon if not already set
+                        if identicon.peek().is_empty() {
+                            let mut identicon_bytes = [0u8; 4];
+                            identicon_bytes.copy_from_slice(&key.key_data[0..4]);
+                            identicon.set(spectre_identicon_render(identicon_bytes));
+                        }
                     }
                     result
                 };
@@ -212,29 +249,21 @@ fn Home() -> Element {
                         &site,
                         result_type,
                         None,
-                        1,
+                        counter_value,
                         SpectreKeyPurpose::Authentication,
                         None,
                     ) {
                         generated_password.set(password);
-                        
-                        // Generate identicon (reuse the cached user key data)
-                        let mut identicon_bytes = [0u8; 4];
-                        identicon_bytes.copy_from_slice(&user_key.key_data[0..4]);
-                        identicon.set(spectre_identicon_render(identicon_bytes));
                     } else {
                         generated_password.set(String::new());
-                        identicon.set(String::new());
                     }
                 } else {
                     generated_password.set(String::new());
-                    identicon.set(String::new());
                 }
                 
                 is_generating.set(false);
             } else {
                 generated_password.set(String::new());
-                identicon.set(String::new());
                 is_generating.set(false);
             }
         });
@@ -251,6 +280,8 @@ fn Home() -> Element {
                 Header {}
                 
                 PasswordTypeSelector { password_type }
+                
+                PasswordCounterSelector { counter }
                 
                 div {
                     class: "space-y-6",
@@ -270,6 +301,8 @@ fn Home() -> Element {
                             trigger_key_computation.set(trigger_key_computation() + 1);
                         }
                     }
+                    
+                    IdenticonDisplay { identicon }
                     
                     SiteDomainInput {
                         site_domain,

@@ -34,6 +34,7 @@ pub use algorithm::{
     spectre_user_key, 
     spectre_site_result, 
     spectre_identicon,
+    spectre_identicon_preview,
     spectre_identicon_render,
     spectre_site_state,
     SpectreUserKey,
