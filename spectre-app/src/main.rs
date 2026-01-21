@@ -339,7 +339,14 @@ fn Home() -> Element {
                 // Footer
                 p {
                     class: "text-center text-xs text-slate-500 mt-4",
-                    "Powered by the Spectre algorithm for deterministic password generation"
+                    "Powered by the "
+                    a {
+                        href: "https://github.com/zeroows/spectre",
+                        target: "_blank",
+                        class: "hover:text-cyan-400 transition-colors underline decoration-slate-800 underline-offset-2",
+                        "Spectre algorithm"
+                    }
+                    " for deterministic password generation"
                 }
             }
         }
