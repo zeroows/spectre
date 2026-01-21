@@ -28,6 +28,7 @@ fn App() -> Element {
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
+        style { "body {{ background-color: #0f172a; }}" } // bg-slate-900 equivalent
         Router::<Route> {}
     }
 }
@@ -269,7 +270,7 @@ fn Home() -> Element {
 
     rsx! {
         div {
-            class: "bg-slate-900 flex items-center justify-center p-4 font-sans",
+            class: "min-h-screen bg-slate-900 flex items-center justify-center p-4 font-sans",
             
             div {
                 class: "w-full max-w-2xl",
