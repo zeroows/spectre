@@ -23,3 +23,11 @@ default = ["web"]
 web = ["dioxus/web"]
 desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
+
+[profile.release]
+# This removes the debug information that crashes wasm-opt
+debug = false
+strip = true
+# Optional: optimizes for small file size, which is great for web
+opt-level = "z" 
+lto = true
