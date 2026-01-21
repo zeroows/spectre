@@ -45,6 +45,7 @@ fn Home() -> Element {
     let mut identicon = use_signal(|| String::new());
     let mut is_generating = use_signal(|| false);
     let mut is_computing_key = use_signal(|| false);
+    let mut trigger_password_generation = use_signal(|| 0u32);
     
     // Cache the user key to avoid recomputing scrypt for every site
     // The expensive operation (scrypt) only runs when name or secret changes
@@ -174,6 +175,9 @@ fn Home() -> Element {
     // Note: Spectre uses scrypt with N=32768 which is computationally expensive (by design for security)
     // We precompute this in the effect above, so password generation is fast
     use_effect(move || {
+        // Track regeneration trigger
+        let _ = trigger_password_generation();
+        
         // Clone the values we need
         let name = full_name();
         let sec = secret();
@@ -325,7 +329,10 @@ fn Home() -> Element {
                     
                     SitePassword {
                         generated_password,
-                        is_generating
+                        is_generating,
+                        on_generate: move |_| {
+                            trigger_password_generation.set(trigger_password_generation() + 1);
+                        }
                     }
                 }
                 

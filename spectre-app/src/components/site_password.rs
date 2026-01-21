@@ -8,6 +8,7 @@ use std::time::Duration;
 pub fn SitePassword(
     generated_password: Signal<String>,
     is_generating: Signal<bool>,
+    on_generate: EventHandler<()>,
 ) -> Element {
     let mut copied = use_signal(|| false);
     
@@ -65,7 +66,7 @@ pub fn SitePassword(
             // Generate Button
             button {
                 class: "w-full py-4 rounded-xl font-medium text-slate-900 bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 transition-all shadow-lg shadow-cyan-500/25 cursor-pointer",
-                onclick: move |_| {}, // In main.rs we have logic that reacts to site_domain changes
+                onclick: move |_| on_generate.call(()),
                 if *is_generating.read() {
                     span {
                         class: "flex items-center justify-center gap-2",
