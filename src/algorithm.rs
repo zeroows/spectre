@@ -169,17 +169,37 @@ pub fn spectre_identicon(user_name: &str, user_secret: &str) -> Result<[u8; 4]> 
     Ok(identicon)
 }
 
+/// Generate a fast preview identicon using SHA256 (not the real identicon, but instant feedback)
+/// This can be used while typing before the expensive scrypt computation
+pub fn spectre_identicon_preview(user_name: &str, user_secret: &str) -> [u8; 4] {
+    // Use SHA256 for instant feedback (much faster than scrypt)
+    let mut hasher = Sha256::new();
+    hasher.update(b"com.lyndir.masterpassword.preview");
+    hasher.update(&(user_name.len() as u32).to_be_bytes());
+    hasher.update(user_name.as_bytes());
+    hasher.update(user_secret.as_bytes());
+    let hash = hasher.finalize();
+    
+    let mut identicon = [0u8; 4];
+    identicon.copy_from_slice(&hash[0..4]);
+    identicon
+}
+
 /// Render an identicon as a visual string
 pub fn spectre_identicon_render(identicon: [u8; 4]) -> String {
-    const COLORS: &[&str] = &[
-        "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚫",
-        "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚪",
+    const IDENTICON_ACCESSORIES: &[&str] = &[
+        "💠", "🎯", "🌗", "🌓", "🌘", "🌔", "☀️", "☁️", "☂️", "☃️", 
+        "",   "⭐", "✨", "☎️", "📞", "☸️", "🏠", "☘️", "☢️", "☣️", 
+        "☕️", "⌚️", "⌛️", "⏰️", "⚡️", "⛄️", "⛅️", "☔️", "👑", "👸", 
+        "🏰", "⛪️", "🐎", "♟️", "🤴", "👸", "🏰", "⛪️", "🏇", "♟️", 
+        "♨️", "🎵", "🎶", "🎼", "🏳️", "🏴", "⚔️", "⚖️", "⚙️", "⚠️", 
+        "🕹️", "↩️", "✂️", "📲", "✈️", "✉️", "✌️",
     ];
     
     let mut result = String::new();
     for &byte in &identicon {
-        let index = (byte % 16) as usize;
-        result.push_str(COLORS[index]);
+        let index = (byte as usize) % IDENTICON_ACCESSORIES.len();
+        result.push_str(IDENTICON_ACCESSORIES[index]);
     }
     
     result
