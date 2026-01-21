@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use spectre::{spectre_user_key, spectre_site_result, spectre_identicon_render, spectre_identicon, spectre_identicon_preview};
+use spectre::{spectre_user_key, spectre_site_result, spectre_identicon_render, spectre_identicon_preview};
 use spectre::{SpectreResultType, SpectreKeyPurpose, SPECTRE_ALGORITHM_CURRENT, SpectreUserKey, SPECTRE_COUNTER_DEFAULT};
 use gloo_timers::future::sleep;
 use std::time::Duration;
@@ -17,7 +17,6 @@ enum Route {
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
-const MAIN_CSS: Asset = asset!("/assets/main.css");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 fn main() {
@@ -28,7 +27,6 @@ fn main() {
 fn App() -> Element {
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
-        document::Link { rel: "stylesheet", href: MAIN_CSS }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         Router::<Route> {}
     }
@@ -60,15 +58,15 @@ fn Home() -> Element {
     });
 
     // Compute validation states (memoized)
-    let name_valid = use_memo(move || {
+    let _name_valid = use_memo(move || {
         let name = full_name.read();
         !name.is_empty() && name.len() >= 3
     });
-    let secret_valid = use_memo(move || {
+    let _secret_valid = use_memo(move || {
         let sec = secret.read();
         !sec.is_empty() && sec.len() >= 4
     });
-    let domain_valid = use_memo(move || {
+    let _domain_valid = use_memo(move || {
         let site = site_domain.read();
         !site.is_empty() && site.len() >= 3
     });
@@ -271,47 +269,58 @@ fn Home() -> Element {
 
     rsx! {
         div {
-            class: "min-h-screen flex items-center justify-center p-4",
-            style: "background: linear-gradient(135deg, #0a2540 0%, #1a3a52 100%);",
+            class: "bg-slate-900 flex items-center justify-center p-4 font-sans",
             
             div {
-                class: "w-full max-w-4xl bg-slate-800/40 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-slate-700/50",
+                class: "w-full max-w-2xl",
                 
-                Header {}
-                
-                PasswordTypeSelector { password_type }
-                
-                PasswordCounterSelector { counter }
-                
+                // Main Card
                 div {
-                    class: "space-y-6",
+                    class: "bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 shadow-2xl space-y-6",
                     
-                    FullNameInput {
-                        full_name,
-                        on_blur: move |_| {
-                            // Trigger key computation when user leaves full name field
-                            trigger_key_computation.set(trigger_key_computation() + 1);
+                    Header {}
+                    
+                    PasswordTypeSelector { password_type }
+                    
+                    PasswordCounterSelector { counter }
+                    
+                    // Divider
+                    div { class: "border-t border-slate-800 my-2" }
+                    
+                    // Identity Section
+                    div {
+                        class: "space-y-5",
+                        
+                        FullNameInput {
+                            full_name,
+                            on_blur: move |_| {
+                                // Trigger key computation when user leaves full name field
+                                trigger_key_computation.set(trigger_key_computation() + 1);
+                            }
+                        }
+                        
+                        SpectreSecretInput {
+                            secret,
+                            on_blur: move |_| {
+                                // Trigger key computation when user leaves secret field
+                                trigger_key_computation.set(trigger_key_computation() + 1);
+                            }
+                        }
+                        
+                        IdenticonDisplay { identicon }
+                        
+                        SiteDomainInput {
+                            site_domain,
+                            is_computing_key,
+                            on_focus: move |_| {
+                                // Trigger key computation when user focuses site field
+                                trigger_key_computation.set(trigger_key_computation() + 1);
+                            }
                         }
                     }
                     
-                    SpectreSecretInput {
-                        secret,
-                        on_blur: move |_| {
-                            // Trigger key computation when user leaves secret field
-                            trigger_key_computation.set(trigger_key_computation() + 1);
-                        }
-                    }
-                    
-                    IdenticonDisplay { identicon }
-                    
-                    SiteDomainInput {
-                        site_domain,
-                        is_computing_key,
-                        on_focus: move |_| {
-                            // Trigger key computation when user focuses site field
-                            trigger_key_computation.set(trigger_key_computation() + 1);
-                        }
-                    }
+                    // Divider
+                    div { class: "border-t border-slate-800 my-6" }
                     
                     SitePassword {
                         generated_password,
@@ -319,7 +328,11 @@ fn Home() -> Element {
                     }
                 }
                 
-                Footer {}
+                // Footer
+                p {
+                    class: "text-center text-xs text-slate-500 mt-4",
+                    "Powered by the Spectre algorithm for deterministic password generation"
+                }
             }
         }
     }

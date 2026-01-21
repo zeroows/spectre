@@ -16,6 +16,7 @@ script = []
 
 [web.resource.dev]
 script = []
+style = ["/assets/tailwind.css"]
 
 [web]
 # The port the fullstack server will listen on.

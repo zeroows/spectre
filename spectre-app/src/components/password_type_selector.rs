@@ -4,62 +4,58 @@ use spectre::SpectreResultType;
 #[component]
 pub fn PasswordTypeSelector(password_type: Signal<SpectreResultType>) -> Element {
     rsx! {
-        div {
-            class: "mb-8",
+        section {
+            class: "mb-3",
             div {
-                class: "flex items-center gap-2 mb-4",
-                span { class: "text-2xl", "🎯" }
-                h2 { class: "text-white text-xl font-light", "Password Type" }
+                class: "flex items-center gap-2 mb-2",
+                TargetIcon {}
+                span {
+                    class: "text-slate-300 font-medium",
+                    "Password Type"
+                }
             }
+            
             div {
-                class: "grid grid-cols-2 gap-3 mb-6",
-                
+                class: "grid grid-cols-4 gap-2",
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::LongPassword,
-                    label: "LONG PASSWORD"
+                    label: "Long Password"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::MediumPassword,
-                    label: "MEDIUM"
+                    label: "Medium"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::BasicPassword,
-                    label: "BASIC"
+                    label: "Basic"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::ShortPassword,
-                    label: "SHORT"
+                    label: "Short"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::PIN,
                     label: "PIN"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::Name,
-                    label: "NAME"
+                    label: "Name"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::Phrase,
-                    label: "PHRASE"
+                    label: "Phrase"
                 }
-                
                 PasswordTypeButton {
                     password_type: password_type,
                     result_type: SpectreResultType::MaximumSecurityPassword,
-                    label: "MAXIMUM"
+                    label: "Maximum"
                 }
             }
         }
@@ -74,15 +70,34 @@ fn PasswordTypeButton(
 ) -> Element {
     let is_selected = *password_type.read() == result_type;
     
+    let base_class = "py-2 px-4 rounded-xl text-sm font-medium transition-all border";
+    let state_class = if is_selected {
+        "bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-900 border-transparent shadow-lg shadow-cyan-500/25"
+    } else {
+        "bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white"
+    };
+
     rsx! {
         button {
-            class: if is_selected {
-                "bg-cyan-400 text-slate-900 py-3 px-6 rounded-full font-medium tracking-wide hover:bg-cyan-300 transition"
-            } else {
-                "bg-slate-700/50 text-slate-300 py-3 px-6 rounded-full font-medium tracking-wide hover:bg-slate-600/50 transition border border-slate-600"
-            },
+            class: "{base_class} {state_class}",
             onclick: move |_| password_type.set(result_type),
             "{label}"
+        }
+    }
+}
+
+#[component]
+fn TargetIcon() -> Element {
+    rsx! {
+        svg {
+            class: "w-5 h-5 text-cyan-400",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "2",
+            view_box: "0 0 24 24",
+            circle { cx: "12", cy: "12", r: "10" }
+            circle { cx: "12", cy: "12", r: "6" }
+            circle { cx: "12", cy: "12", r: "2" }
         }
     }
 }

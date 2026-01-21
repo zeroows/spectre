@@ -38,6 +38,7 @@ impl WorkerMessage {
         }
     }
     
+    #[allow(dead_code)]
     pub fn from_spectre_key(key: &SpectreUserKey) -> Self {
         WorkerMessage::KeyResult {
             key_id: key.key_id.to_vec(),
