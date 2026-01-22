@@ -4,10 +4,7 @@ A Rust implementation of the Spectre password manager CLI, providing stateless p
 
 **This is a derivative work based on the original Spectre algorithm by Maarten Billemont.**
 
-- Original Project: https://spectre.app
-- Original Repository: https://gitlab.com/spectre.app/api
-- Original License: GNU General Public License v3.0 (GPL-3.0)
-- Original Copyright: © 2011-2017 Maarten Billemont
+- Project: https://spectrs.app
 
 This Rust implementation is also licensed under GPL-3.0 in compliance with the original license terms.
 
